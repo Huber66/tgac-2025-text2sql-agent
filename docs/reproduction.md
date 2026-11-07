@@ -44,7 +44,7 @@ python main.py --cache_only
 python scripts/verify_demo.py
 ```
 
-先确认 Docker 能在本机运行镜像；容器平台或 CPU 指令集不匹配时需使用兼容环境。此发布版本的数据库演示在 Windows + Docker Desktop 的 Linux 容器上验证；Linux CI 验证 Python 依赖与运行时测试，不代替所有平台上的数据库演示。
+数据库演示使用 Docker Desktop 的 Linux 容器。自动检查运行于 Ubuntu + Python 3.12，验证依赖安装与运行时测试。
 
 ## 不调用模型的闭环回放
 
@@ -75,7 +75,7 @@ Python 从仓库根目录的 `.env` 加载配置，进程中已有环境变量�
 
 ## 接入本地比赛资料
 
-先自行准备有权使用的原始 `code/` 或 `final_for_student/` 目录。仓库不从其他参赛队下载比赛资料。
+准备可使用的原始 `code/` 或 `final_for_student/` 目录，然后运行导入脚本：
 
 ```bash
 python scripts/prepare_competition_data.py --source /path/to/original/code
@@ -125,7 +125,7 @@ Windows 包装脚本需要对应传入 `-Profile competition`：
 - **连不上数据库**：确认 `docker compose ps` 为 healthy，并核对 `DB_PORT`；本仓库默认 19030，不是原比赛项目的 9030。
 - **找不到资料**：检查 `TGAC_PROFILE` 与 `TGAC_DATA_DIR`；默认 demo 不依赖外部文件。
 - **没有缓存**：`--cache_only` 仅处理答案库；指定无缓存的 ID 会报错，改用模型运行时移除此参数。
-- **API 报错**：检查密钥、模型名称、账户额度与网络。图流程失败会返回非零状态，不代表产生了有效答案。
+- **API 报错**：检查密钥、模型名称、账户额度与网络，根据终端错误信息定位问题。
 - **初始化提示已有表**：正常情况下直接复用数据库，不需要再次导入。
 
 输出保存在 `output/<profile>/`，逐题运行记录在其中的 `api_langgraph_runs/`。报告问题时优先给出命令和删去敏感信息的报错摘要。

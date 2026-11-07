@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-blue)
 
-中文 · [English](README.en.md) · [方案解读](docs/solution.md) · [逐步演示](docs/walkthrough.md) · [完整复现](docs/reproduction.md) · [面试讲解](docs/interview-guide.md)
+中文 · [English](README.en.md) · [方案解读](docs/solution.md) · [逐步演示](docs/walkthrough.md) · [完整复现](docs/reproduction.md) · [项目导览](docs/project-guide.md)
 
 本项目源于 **2025 腾讯游戏算法大赛（TGAC）赛道三：数智决策科学**，针对游戏数据分析中的业务口径、多表关联与复杂 SQL 生成问题，采用 **Python + LangGraph + DeepSeek + StarRocks** 实现单 Agent 的规划、查询、修正与提交闭环。[比赛介绍](https://www.competehub.dev/zh/competitions/tgac_03) · [赛事官网](https://tgac.tencent.com/)
 
@@ -39,9 +39,9 @@ flowchart LR
     R --> O[JSON 结果 + 本地日志]
 ```
 
-这里的拦截器是基于历史样本的启发式检查，有重试上限；SQL 能执行、未命中黑名单，都不等于业务答案一定正确。详细边界见[架构说明](docs/architecture.md)。
+拦截器根据历史错误样本检查提交结果，并通过限次重试反馈引导查询修正。具体分支见[架构说明](docs/architecture.md)。
 
-除了单题运行，项目还包含运行之间的知识维护：人工根据外部评测或复核结果更新正确、错误样本，再从参考 SQL 或未解决题目中提炼 Logic Guide。官网提交与评测反馈不由当前程序自动完成。[知识维护流程与代码对应](docs/solution.md#运行时流程与知识维护流程)
+除了单题运行，项目还包含运行之间的知识维护：根据外部评测或复核结果，通过管理工具更新正确、错误样本，再从参考 SQL 或待分析题目中提炼 Logic Guide。[知识维护流程与代码对应](docs/solution.md#运行时流程与知识维护流程)
 
 ## 阅读入口
 
@@ -50,7 +50,7 @@ flowchart LR
 | 为什么选择 Agent 与语境工程 | [方案解读](docs/solution.md) |
 | 图流程、工具和提交策略如何实现 | [架构与代码对应](docs/architecture.md) |
 | 一次错误如何被拦截、修正并输出 | [逐步演示](docs/walkthrough.md) |
-| 如何讲清项目并回答技术追问 | [面试讲解提纲](docs/interview-guide.md) |
+| 如何阅读代码并运行各类示例 | [项目导览](docs/project-guide.md) |
 
 ## 快速运行：不调用模型的公开演示
 
@@ -86,7 +86,7 @@ python scripts/verify_demo.py
 | `sql_1`：回流玩家各游戏总时长 | 标签快照过滤、双表关联、分组聚合 | `g_alpha: 75`，`g_beta: 60` |
 | `sql_2`：次日留存 | `LEFT JOIN`、玩家去重、比率计算 | 活跃 4 人，留存 2 人，留存率 `0.5` |
 
-结果位于 `output/demo/dataset_exe_result.json`，格式示例见 [examples/demo_result.json](examples/demo_result.json)。这些数字只用于验证自造演示，不是比赛评测指标。
+结果位于 `output/demo/dataset_exe_result.json`，格式示例见 [examples/demo_result.json](examples/demo_result.json)。
 
 ## 不调用模型的闭环回放
 
@@ -133,7 +133,7 @@ Windows 也可使用 `run.ps1`：`-Action Setup`、`StartDb`、`InitDb`、`Cache
 ├── generate_logic_guide.py        # 逻辑指引提取工具
 ├── data/demo/                    # 独立编写的自造数据与答案
 ├── scripts/                      # 闭环回放、资料导入、演示校验与公开文件检查
-├── docs/                         # 方案、架构、讲解提纲、复现与资料核对
+├── docs/                         # 方案、架构、项目导览、复现与模块索引
 ├── tests/                        # 不调用 API / 数据库的运行时回归测试
 ├── examples/                     # 自造演示结果与已核验的闭环轨迹
 ├── .vscode/                      # F5 调试入口
@@ -142,21 +142,19 @@ Windows 也可使用 `run.ps1`：`-Action Setup`、`StartDb`、`InitDb`、`Cache
 
 ## 使用原比赛资料复现
 
-原比赛题目、数据、原始提交结果、错误样本和逐题逻辑资料没有再分发到此仓库。持有可使用的原始资料时，可运行本地导入脚本，再切换 `TGAC_PROFILE=competition`；演示与比赛模式使用独立数据库和输出目录。[导入与运行步骤](docs/reproduction.md#接入本地比赛资料)
+使用本地比赛资料时，运行导入脚本，再切换 `TGAC_PROFILE=competition`；演示与比赛模式使用独立数据库和输出目录。[导入与运行步骤](docs/reproduction.md#接入本地比赛资料)
 
-## 验证与已知边界
+## 运行验证
 
 - 自动检查覆盖结果格式、错误黑名单、缓存执行、最终 SQL 重执行、模型异常日志和已有数据库保护。
-- 自造演示覆盖数据导入、实际 SQL 查询与输出比较；不把它当作模型泛化能力的证明。
-- 闭环回放验证固定工具序列下的真实执行与拦截，不把预设 SQL 的成功当作模型自行纠错。
-- 数据库执行由锁串行化；增加 `--max_workers` 主要并发模型请求，不等于并行执行 SQL。
-- Prompt 中的规则来自特定业务实践，迁移到其他数据库或业务口径时需要调整。
-- 模型工具直接连接所配置的数据库。请用于本地实验库，接入其他环境时配置适当的数据库权限。
+- 自造演示覆盖数据导入、实际 SQL 查询与输出比较。
+- 闭环回放通过固定工具序列验证错误拦截、修正规划与最终重执行。
+- `--max_workers` 控制模型任务并发，数据库执行使用锁协调。
 
-[验证记录与复现范围](docs/validation.md) · [问题反馈](https://github.com/Huber66/tgac-2025-text2sql-agent/issues)
+[验证记录](docs/validation.md) · [问题反馈](https://github.com/Huber66/tgac-2025-text2sql-agent/issues)
 
 ## 许可证与参考
 
 项目代码、文档和自造演示数据采用 [MIT License](LICENSE)。外部比赛资料、服务与依赖保留各自权利和使用条件，见 [NOTICE](NOTICE.md)。本仓库与腾讯不存在官方关联。
 
-开源组织方式参考了同赛道公开项目，具体来源、采用方式与资料边界记录在[开源参考说明](docs/open-source-references.md)中。历史 PPT 与方案说明的内容已结合源码整理，差异见[资料核对说明](docs/materials-review.md)。
+开源组织方式参考了同赛道公开项目，具体来源与采用方式见[开源参考说明](docs/open-source-references.md)。代码与数据文件的对应关系见[模块索引](docs/source-map.md)。

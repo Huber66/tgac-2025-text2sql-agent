@@ -9,4 +9,4 @@ python scripts/check_public_files.py
 
 Use the synthetic demo to report issues. Do not attach API keys, `.env`, original competition assets, complete execution logs or model conversation histories to a public issue or pull request.
 
-Changes should preserve the distinction between cached SQL execution and fresh model inference. Describe validation as local tests or demo checks; do not report them as competition scores.
+Include the commands used for validation and their output. Identify whether a run used cached SQL, scripted tool calls, or fresh model inference.

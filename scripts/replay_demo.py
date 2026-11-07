@@ -1,6 +1,6 @@
 """Replay a scripted tool sequence through the real graph and demo database.
 
-SQL choices are predefined. This checks the feedback loop, not model reasoning.
+SQL choices are predefined; the graph and database execute each step.
 """
 import json
 import sys
