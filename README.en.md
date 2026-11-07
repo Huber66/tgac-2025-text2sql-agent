@@ -1,6 +1,10 @@
 # TGAC 2025 Text-to-SQL Agent
 
+**Champion · 2025 Tencent Games Algorithm Competition · Data Intelligence Decision Science Track**
+
 [中文](README.md) · English · [Architecture](docs/architecture.md) · [Reproduction](docs/reproduction.md)
+
+[Project showcase](https://huber66.github.io/projects/tgac.html)
 
 A Python / LangGraph / DeepSeek / StarRocks implementation developed for the **2025 Tencent Games Algorithm Competition, Track 3: Data Intelligence Decision Science**. It combines task-specific schema context, business logic guides, SQL execution feedback, known-error result checks and final-query re-execution.
 

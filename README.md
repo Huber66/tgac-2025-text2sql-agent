@@ -2,11 +2,15 @@
 
 **用业务逻辑指引和 SQL 执行反馈，把自然语言分析需求转成可执行查询。**
 
+**赛事荣誉：2025 腾讯游戏算法大赛 · 数智决策科学赛道冠军**
+
 [![Python checks](https://github.com/Huber66/tgac-2025-text2sql-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/Huber66/tgac-2025-text2sql-agent/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-blue)
 
 中文 · [English](README.en.md) · [方案解读](docs/solution.md) · [逐步演示](docs/walkthrough.md) · [完整复现](docs/reproduction.md) · [项目导览](docs/project-guide.md)
+
+[项目展示页](https://huber66.github.io/projects/tgac.html)
 
 本项目源于 **2025 腾讯游戏算法大赛（TGAC）赛道三：数智决策科学**，针对游戏数据分析中的业务口径、多表关联与复杂 SQL 生成问题，采用 **Python + LangGraph + DeepSeek + StarRocks** 实现单 Agent 的规划、查询、修正与提交闭环。[比赛介绍](https://www.competehub.dev/zh/competitions/tgac_03) · [赛事官网](https://tgac.tencent.com/)
 
