@@ -6,13 +6,15 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-blue)
 
-中文 · [English](README.en.md) · [架构说明](docs/architecture.md) · [完整复现](docs/reproduction.md) · [同赛道开源参考](docs/open-source-references.md)
+中文 · [English](README.en.md) · [方案解读](docs/solution.md) · [逐步演示](docs/walkthrough.md) · [完整复现](docs/reproduction.md) · [面试讲解](docs/interview-guide.md)
 
 本项目源于 **2025 腾讯游戏算法大赛（TGAC）赛道三：数智决策科学**，针对游戏数据分析中的业务口径、多表关联与复杂 SQL 生成问题，采用 **Python + LangGraph + DeepSeek + StarRocks** 实现单 Agent 的规划、查询、修正与提交闭环。[比赛介绍](https://www.competehub.dev/zh/competitions/tgac_03) · [赛事官网](https://tgac.tencent.com/)
 
 公开版本保留核心实现，并附两道完全自造的演示题。**首次运行无需比赛资料，也无需 API 密钥**；让模型重新解题时才需要配置 DeepSeek。
 
 ## 核心设计
+
+原始方案面对的约束是有限的 Golden SQL 参考样本，以及混合、含噪的 Mock 数据。单靠字段名容易漏掉业务口径，SQL 语法正确也可能选错日期或统计人群。因此方案把重点放在**先查询数据验证假设、注入业务逻辑指引、利用执行和结果反馈修正**。路线选择与知识来源详见[方案设计](docs/solution.md)。
 
 | 模块 | 实现方式 | 解决的问题 |
 | --- | --- | --- |
@@ -38,6 +40,17 @@ flowchart LR
 ```
 
 这里的拦截器是基于历史样本的启发式检查，有重试上限；SQL 能执行、未命中黑名单，都不等于业务答案一定正确。详细边界见[架构说明](docs/architecture.md)。
+
+除了单题运行，项目还包含运行之间的知识维护：人工根据外部评测或复核结果更新正确、错误样本，再从参考 SQL 或未解决题目中提炼 Logic Guide。官网提交与评测反馈不由当前程序自动完成。[知识维护流程与代码对应](docs/solution.md#运行时流程与知识维护流程)
+
+## 阅读入口
+
+| 想了解什么 | 推荐入口 |
+| --- | --- |
+| 为什么选择 Agent 与语境工程 | [方案解读](docs/solution.md) |
+| 图流程、工具和提交策略如何实现 | [架构与代码对应](docs/architecture.md) |
+| 一次错误如何被拦截、修正并输出 | [逐步演示](docs/walkthrough.md) |
+| 如何讲清项目并回答技术追问 | [面试讲解提纲](docs/interview-guide.md) |
 
 ## 快速运行：不调用模型的公开演示
 
@@ -75,6 +88,19 @@ python scripts/verify_demo.py
 
 结果位于 `output/demo/dataset_exe_result.json`，格式示例见 [examples/demo_result.json](examples/demo_result.json)。这些数字只用于验证自造演示，不是比赛评测指标。
 
+## 不调用模型的闭环回放
+
+数据库初始化完成后，可以观察一次包含错误结果拦截的实际图执行：
+
+```bash
+python scripts/replay_demo.py
+python scripts/verify_demo.py --file output/demo/replay_result.json --ids sql_1
+```
+
+脚本依次执行侦察查询、故意使用错误日期的 SQL、提交拦截、修正规划、正确查询与最终提交。**工具调用顺序与 SQL 已预设，数据库访问和拦截器实际运行，不调用模型 API。** 总计 6 次工具调用、4 次 SQL 查询，输出轨迹位于 `output/demo/replay_trace.json`。
+
+[逐步说明与时序图](docs/walkthrough.md) · [一次已核验的自造数据轨迹](examples/replay_trace.json)
+
 ## 让 DeepSeek 重新生成 SQL
 
 把 `.env.example` 复制为 `.env`，填写 `DEEPSEEK_API_KEY`。默认模型为 `deepseek-flash`，可通过 `DEEPSEEK_MODEL` 或 `--model_name` 修改。
@@ -90,9 +116,9 @@ python scripts/verify_demo.py --file output/demo/agent_result.json --ids sql_1
 
 1. 打开仓库目录，安装 Python 与 Python Debugger 扩展，选择 `.venv` 解释器。
 2. 完成上面的依赖安装、数据库启动和首次初始化。
-3. 按 **F5**：选择 `TGAC: synthetic demo (no API)`，或配置密钥后选择 `TGAC: DeepSeek demo (one question)`。
+3. 按 **F5**：选择 `TGAC: synthetic demo (no API)` 执行已有 SQL，或选择 `TGAC: feedback loop replay (no API)` 观察拦截与修正。配置密钥后可选择 `TGAC: DeepSeek demo (one question)`。
 
-Windows 也可使用 `run.ps1`：`-Action Setup`、`StartDb`、`InitDb`、`Cached`、`Agent`、`Check`、`StopDb`。完整参数见[复现文档](docs/reproduction.md)。
+Windows 也可使用 `run.ps1`：`-Action Setup`、`StartDb`、`InitDb`、`Cached`、`Replay`、`Agent`、`Check`、`StopDb`。完整参数见[复现文档](docs/reproduction.md)。
 
 ## 仓库结构
 
@@ -106,10 +132,10 @@ Windows 也可使用 `run.ps1`：`-Action Setup`、`StartDb`、`InitDb`、`Cache
 ├── manage_answers.py             # 正确答案与错误样本管理
 ├── generate_logic_guide.py        # 逻辑指引提取工具
 ├── data/demo/                    # 独立编写的自造数据与答案
-├── scripts/                      # 资料导入、演示校验、公开文件检查
-├── docs/                         # 架构、复现、验证与开源参考
+├── scripts/                      # 闭环回放、资料导入、演示校验与公开文件检查
+├── docs/                         # 方案、架构、讲解提纲、复现与资料核对
 ├── tests/                        # 不调用 API / 数据库的运行时回归测试
-├── examples/                     # 公开演示的输出格式
+├── examples/                     # 自造演示结果与已核验的闭环轨迹
 ├── .vscode/                      # F5 调试入口
 └── .github/workflows/ci.yml       # 自动检查
 ```
@@ -122,6 +148,7 @@ Windows 也可使用 `run.ps1`：`-Action Setup`、`StartDb`、`InitDb`、`Cache
 
 - 自动检查覆盖结果格式、错误黑名单、缓存执行、最终 SQL 重执行、模型异常日志和已有数据库保护。
 - 自造演示覆盖数据导入、实际 SQL 查询与输出比较；不把它当作模型泛化能力的证明。
+- 闭环回放验证固定工具序列下的真实执行与拦截，不把预设 SQL 的成功当作模型自行纠错。
 - 数据库执行由锁串行化；增加 `--max_workers` 主要并发模型请求，不等于并行执行 SQL。
 - Prompt 中的规则来自特定业务实践，迁移到其他数据库或业务口径时需要调整。
 - 模型工具直接连接所配置的数据库。请用于本地实验库，接入其他环境时配置适当的数据库权限。
@@ -132,4 +159,4 @@ Windows 也可使用 `run.ps1`：`-Action Setup`、`StartDb`、`InitDb`、`Cache
 
 项目代码、文档和自造演示数据采用 [MIT License](LICENSE)。外部比赛资料、服务与依赖保留各自权利和使用条件，见 [NOTICE](NOTICE.md)。本仓库与腾讯不存在官方关联。
 
-开源组织方式参考了同赛道公开项目，具体来源、采用方式与资料边界记录在[开源参考说明](docs/open-source-references.md)中。
+开源组织方式参考了同赛道公开项目，具体来源、采用方式与资料边界记录在[开源参考说明](docs/open-source-references.md)中。历史 PPT 与方案说明的内容已结合源码整理，差异见[资料核对说明](docs/materials-review.md)。

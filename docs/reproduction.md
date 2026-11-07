@@ -46,6 +46,17 @@ python scripts/verify_demo.py
 
 先确认 Docker 能在本机运行镜像；容器平台或 CPU 指令集不匹配时需使用兼容环境。此发布版本的数据库演示在 Windows + Docker Desktop 的 Linux 容器上验证；Linux CI 验证 Python 依赖与运行时测试，不代替所有平台上的数据库演示。
 
+## 不调用模型的闭环回放
+
+不调用模型的闭环回放另见[逐步演示](walkthrough.md)。初始化 demo 后可执行：
+
+```bash
+python scripts/replay_demo.py
+python scripts/verify_demo.py --file output/demo/replay_result.json --ids sql_1
+```
+
+Windows 包装脚本为 `.\run.ps1 -Action Replay`。该演示使用预设的工具调用和 SQL，仅适用于 demo 模式，不会构造模型 API 客户端。
+
 ## 环境变量
 
 | 变量 | 默认值 | 说明 |
@@ -97,6 +108,7 @@ Windows 包装脚本需要对应传入 `-Profile competition`：
 | --- | --- |
 | 只检查环境和数据库 | `python check_environment.py` |
 | 执行全部已有正确 SQL | `python main.py --cache_only` |
+| 回放错误拦截与最终重执行 | `python scripts/replay_demo.py` |
 | 强制模型处理指定题 | `python main.py --ignore_cache --rerun_ids sql_1,sql_2` |
 | 更换模型 | `python main.py --ignore_cache --model_name deepseek-v4-pro --limit 1` |
 | 查看答案库状态 | `python manage_answers.py status` |

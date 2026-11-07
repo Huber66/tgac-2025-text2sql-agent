@@ -1,5 +1,5 @@
 param(
-    [ValidateSet('Setup', 'StartDb', 'InitDb', 'Check', 'Cached', 'Agent', 'All', 'StopDb')]
+    [ValidateSet('Setup', 'StartDb', 'InitDb', 'Check', 'Cached', 'Replay', 'Agent', 'All', 'StopDb')]
     [string]$Action = 'Check',
     [ValidateSet('demo', 'competition')][string]$Profile = 'demo',
     [string]$SqlIds = 'sql_1',
@@ -46,6 +46,7 @@ switch ($Action) {
     'Cached' {
         & $projectPython (Join-Path $PSScriptRoot 'main.py') --cache_only --max_workers $Workers
     }
+    'Replay' { & $projectPython (Join-Path $PSScriptRoot 'scripts\replay_demo.py') }
     'Agent' {
         & $projectPython (Join-Path $PSScriptRoot 'main.py') --ignore_cache --rerun_ids $SqlIds --limit $Limit --max_workers $Workers --output_file (Join-Path $PSScriptRoot "output\$Profile\agent_result.json")
     }

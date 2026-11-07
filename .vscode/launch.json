@@ -2,6 +2,16 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "TGAC: feedback loop replay (no API)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/replay_demo.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "env": {"TGAC_PROFILE": "demo", "PYTHONIOENCODING": "utf-8", "PYTHONUTF8": "1"},
+      "preLaunchTask": "TGAC: start StarRocks"
+    },
+    {
       "name": "TGAC: synthetic demo (no API)",
       "type": "debugpy",
       "request": "launch",

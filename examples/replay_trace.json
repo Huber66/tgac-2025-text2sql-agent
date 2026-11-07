@@ -1,0 +1,113 @@
+{
+  "mode": "scripted_tool_replay",
+  "uses_model_api": false,
+  "data_source": "independently created synthetic demo",
+  "events": [
+    {
+      "step": 1,
+      "tool": "execute_sql_tool",
+      "arguments": {
+        "query": "SELECT event_date, player_id, game_id, play_minutes FROM demo_sessions ORDER BY event_date, player_id LIMIT 5"
+      },
+      "observation": [
+        {
+          "event_date": "20260101",
+          "player_id": "p001",
+          "game_id": "g_alpha",
+          "play_minutes": 30
+        },
+        {
+          "event_date": "20260101",
+          "player_id": "p002",
+          "game_id": "g_alpha",
+          "play_minutes": 45
+        },
+        {
+          "event_date": "20260101",
+          "player_id": "p003",
+          "game_id": "g_beta",
+          "play_minutes": 20
+        },
+        {
+          "event_date": "20260101",
+          "player_id": "p004",
+          "game_id": "g_beta",
+          "play_minutes": 60
+        },
+        {
+          "event_date": "20260102",
+          "player_id": "p001",
+          "game_id": "g_alpha",
+          "play_minutes": 50
+        }
+      ]
+    },
+    {
+      "step": 2,
+      "tool": "execute_sql_tool",
+      "arguments": {
+        "query": "SELECT game_id, SUM(play_minutes) AS total_minutes FROM demo_sessions WHERE event_date = '20990101' GROUP BY game_id"
+      },
+      "observation": []
+    },
+    {
+      "step": 3,
+      "tool": "submit_final_sql",
+      "arguments": {
+        "final_sql_query": "SELECT game_id, SUM(play_minutes) AS total_minutes FROM demo_sessions WHERE event_date = '20990101' GROUP BY game_id"
+      },
+      "observation": "Error: (自动拦截) 你的执行结果与已知错误完全一致！"
+    },
+    {
+      "step": 4,
+      "tool": "revise_plan",
+      "arguments": {
+        "new_plan_description": "The empty result used an incorrect date. Use 20260101 and join the returning-player snapshot on the same date."
+      },
+      "observation": "Your plan has been successfully revised. You must now follow this new plan."
+    },
+    {
+      "step": 5,
+      "tool": "execute_sql_tool",
+      "arguments": {
+        "query": "SELECT s.game_id, SUM(s.play_minutes) AS total_minutes FROM demo_sessions s JOIN demo_player_tags t ON s.player_id = t.player_id AND t.snapshot_date = '20260101' WHERE s.event_date = '20260101' AND t.player_segment = 'returning' GROUP BY s.game_id ORDER BY s.game_id"
+      },
+      "observation": [
+        {
+          "game_id": "g_alpha",
+          "total_minutes": 75
+        },
+        {
+          "game_id": "g_beta",
+          "total_minutes": 60
+        }
+      ]
+    },
+    {
+      "step": 6,
+      "tool": "submit_final_sql",
+      "arguments": {
+        "final_sql_query": "SELECT s.game_id, SUM(s.play_minutes) AS total_minutes FROM demo_sessions s JOIN demo_player_tags t ON s.player_id = t.player_id AND t.snapshot_date = '20260101' WHERE s.event_date = '20260101' AND t.player_segment = 'returning' GROUP BY s.game_id ORDER BY s.game_id"
+      },
+      "observation": "Success: 提交成功。"
+    }
+  ],
+  "blocked_submissions": 1,
+  "accepted_submissions": 1,
+  "sql_executions_including_final_reexecution": 4,
+  "result_matches_fixture": true,
+  "final_result": {
+    "sql_id": "sql_1",
+    "sql": "SELECT s.game_id, SUM(s.play_minutes) AS total_minutes FROM demo_sessions s JOIN demo_player_tags t ON s.player_id = t.player_id AND t.snapshot_date = '20260101' WHERE s.event_date = '20260101' AND t.player_segment = 'returning' GROUP BY s.game_id ORDER BY s.game_id",
+    "result": [
+      {
+        "game_id": "g_alpha",
+        "total_minutes": 75
+      },
+      {
+        "game_id": "g_beta",
+        "total_minutes": 60
+      }
+    ]
+  }
+}
