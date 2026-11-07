@@ -1,0 +1,49 @@
+[
+  {
+    "table_name": "demo_sessions",
+    "table_description": "自造演示：玩家每日游戏活动",
+    "columns": [
+      {
+        "col": "event_date",
+        "type": "string",
+        "description": "活动日期YYYYMMDD"
+      },
+      {
+        "col": "player_id",
+        "type": "string",
+        "description": "虚构玩家ID"
+      },
+      {
+        "col": "game_id",
+        "type": "string",
+        "description": "虚构游戏ID"
+      },
+      {
+        "col": "play_minutes",
+        "type": "int",
+        "description": "游玩分钟数"
+      }
+    ]
+  },
+  {
+    "table_name": "demo_player_tags",
+    "table_description": "自造演示：每日玩家标签",
+    "columns": [
+      {
+        "col": "snapshot_date",
+        "type": "string",
+        "description": "快照日期YYYYMMDD"
+      },
+      {
+        "col": "player_id",
+        "type": "string",
+        "description": "虚构玩家ID"
+      },
+      {
+        "col": "player_segment",
+        "type": "string",
+        "description": "returning或new"
+      }
+    ]
+  }
+]

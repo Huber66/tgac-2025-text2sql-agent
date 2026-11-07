@@ -1,0 +1,19 @@
+[
+  {
+    "sql_id": "sql_1",
+    "question": "统计2026年1月1日标签为 returning 的玩家在当天各游戏的游玩总时长。输出：game_id、total_minutes。",
+    "table_list": [
+      "demo_sessions",
+      "demo_player_tags"
+    ],
+    "knowledge": "活动日期和标签快照日期都限定为20260101；标签按player_id关联；按game_id汇总play_minutes。"
+  },
+  {
+    "sql_id": "sql_2",
+    "question": "统计2026年1月1日活跃玩家的次日留存。输出：active_users、retained_users、retention_rate（小数，保留两位）。",
+    "table_list": [
+      "demo_sessions"
+    ],
+    "knowledge": "基准日20260101，次日20260102。按player_id去重，分母为基准日活跃玩家数；使用LEFT JOIN保留未留存玩家。"
+  }
+]

@@ -1,0 +1,7 @@
+# Tested with Python 3.12. See requirements-lock.txt for the full environment.
+langchain-core==1.7.6
+langchain-openai==1.7.4
+langgraph==1.2.20
+PyMySQL==1.2.3
+python-dotenv==1.1.0
+typing_extensions==4.16.0

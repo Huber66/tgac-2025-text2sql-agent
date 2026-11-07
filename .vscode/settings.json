@@ -1,0 +1,7 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv",
+  "python.envFile": "${workspaceFolder}/.env",
+  "python.terminal.executeInFileDir": true,
+  "files.exclude": {"**/__pycache__": true, ".venv": true},
+  "search.exclude": {".venv": true, "output": true, "data/competition": true}
+}

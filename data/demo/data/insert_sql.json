@@ -1,0 +1,12 @@
+[
+  {
+    "sql_id": "demo_sessions_seed",
+    "table_name": "demo_sessions",
+    "insert_sql": "INSERT INTO demo_sessions VALUES ('20260101','p001','g_alpha',30),('20260101','p002','g_alpha',45),('20260101','p003','g_beta',20),('20260101','p004','g_beta',60),('20260102','p001','g_alpha',50),('20260102','p003','g_beta',40),('20260102','p005','g_alpha',10)"
+  },
+  {
+    "sql_id": "demo_tags_seed",
+    "table_name": "demo_player_tags",
+    "insert_sql": "INSERT INTO demo_player_tags VALUES ('20260101','p001','returning'),('20260101','p002','returning'),('20260101','p003','new'),('20260101','p004','returning')"
+  }
+]

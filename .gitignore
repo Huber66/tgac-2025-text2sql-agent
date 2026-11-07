@@ -1,0 +1,32 @@
+# Local credentials and configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Competition artifacts are supplied locally; never publish the original bundle.
+data/competition/
+final_for_student/
+upload_example/
+answer_key.json
+error_samples.json
+logic_guides.json
+dataset_exe_result.json
+!data/demo/answer_key.json
+!data/demo/error_samples.json
+!data/demo/logic_guides.json
+
+# Generated files and local environments
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+output/
+*.log
+*.zip
+*.ipynb
+.DS_Store
+Thumbs.db

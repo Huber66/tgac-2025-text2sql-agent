@@ -1,0 +1,27 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "TGAC: synthetic demo (no API)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/main.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "env": {"TGAC_PROFILE": "demo", "PYTHONIOENCODING": "utf-8", "PYTHONUTF8": "1"},
+      "args": ["--cache_only"],
+      "preLaunchTask": "TGAC: start StarRocks"
+    },
+    {
+      "name": "TGAC: DeepSeek demo (one question)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/main.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "env": {"TGAC_PROFILE": "demo", "PYTHONIOENCODING": "utf-8", "PYTHONUTF8": "1"},
+      "args": ["--ignore_cache", "--rerun_ids", "sql_1", "--output_file", "output/demo/agent_result.json"],
+      "preLaunchTask": "TGAC: start StarRocks"
+    }
+  ]
+}

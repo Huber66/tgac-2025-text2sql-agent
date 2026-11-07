@@ -1,0 +1,4 @@
+{
+  "sql_1": "按player_id连接两表，并同时过滤活动日期与标签快照日期。只保留returning标签，按game_id汇总分钟数。",
+  "sql_2": "基准日玩家作为LEFT JOIN左侧，次日日期写在ON中。分子分母均对player_id去重；比率输出小数。"
+}
